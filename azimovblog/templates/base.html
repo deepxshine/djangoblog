@@ -1,6 +1,6 @@
 {% load static %} <!--Загружает статик-файлы -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"><!--подключаем  css -->
@@ -9,9 +9,11 @@
 <body>
 {% include 'includes/header.html' %}<!--включить хэдер -->
 <main>
+  <div class="container py-5">
   {% block content %}<!--Начало блока -->
   Здесь будет контент
   {% endblock %}<!--конец блока-->
+  </div>
 </main>
 {% include 'includes/footer.html' %}<!--включить футер -->
 </body>
