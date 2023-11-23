@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load thumbnail %}
+{% block title %}{{post.title }} {% endblock %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col">
+      {% thumbnail post.image "800x600" as im %}
+      <img src="{{ im.url }}">
+      {% endthumbnail %}
+    </div>
+    <div class="col">
+      <h1>{{ post.title }}</h1>
+      <ul>
+        <li>
+          Дата публикации {{ post.pubdate }}
+        </li>
+        <li>
+          В категории <a href="#">{{post.category }}</a>
+        </li>
+        <li>
+          Автор поста <a href="#">{% if post.author.get_full_name %}{{post.author.get_full_name }}{% else %}{{ post.author }} {% endif %}</a>
+        </li>
+      </ul>
+      <button type="button" class="btn btn-primary btl-lg"
+              style="background-color:#ff8800; border-color:#ffffff;  border-radius:5px;">Подписаться на автора
+      </button>
+      <button type="button" class="btn btn-primary btl-lg"
+              style="background-color:#ff8800; border-color:#ffffff;  border-radius:5px">Добавить в избранное
+      </button>
+    </div>
+  </div>
+  <article>
+    <p>{{ post.text }}</p>
+  </article>
+</div>
+{% endblock %}

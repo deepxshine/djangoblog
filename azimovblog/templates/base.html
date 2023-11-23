@@ -5,6 +5,16 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"><!--подключаем  css -->
   <title>{% block title %} Заголовок {% endblock %}</title><!--Блок заголовка -->
+  <style>
+  .some-btn {
+    background-color: #ff8800;
+    border-color: #ffffff;
+    border-radius: 5px;
+  }
+  .some-btn:focus {
+    outline: none;
+  }
+</style>
 </head>
 <body>
 {% include 'includes/header.html' %}<!--включить хэдер -->

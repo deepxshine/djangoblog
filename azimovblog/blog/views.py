@@ -1,9 +1,9 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
-from django.template import loader
-# Create your views here.
 
-from .models import Post
+from .models import Post, Category
+
+
+# Create your views here.
 
 
 def index(request):
@@ -21,4 +21,17 @@ def post_info(request, pk):
         'post': post
     }
     template = 'blog/post_info.html'
+    return render(request, template, context)
+
+
+def category_info():
+    pass
+
+
+def all_category(request):
+    categories = Category.objects.all()
+    context = {
+        'categories': categories
+    }
+    template = 'blog/all_categories.html'
     return render(request, template, context)
