@@ -1,12 +1,12 @@
 <header>
   <nav class="navbar" style="background-color:#fcebc7">
     <div class="container-fluid">
-      <a class="brand_r navbar-brand" href="#">
+      <a class="brand_r navbar-brand" href="{% url 'blog:index' %}">
         <span class="brand_r" style="color:#ff8800">Azimov</span>Blog
       </a>
       <ul class="nav">
         <li class="nav-item">
-          <a class="nav-link" href="#">Категории</a>
+          <a class="nav-link" href="{% url 'blog:all_category' %}">Категории</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">Избранное </a>

@@ -11,7 +11,6 @@
     <li>{{ post.pubdate|date:"DATETIME_FORMAT" }}</li>
     <li>Автор: <a href="#" class="link-dark">{% if post.author.get_full_name %}{{post.author.get_full_name }}
       {% else%}{{ post.author }} {% endif %}</a></li>
-    <li>Опубликован в категории: <a href="#" class="link-dark">{{ post.category }}</a></li>
   </ul>
   <p>{{ post.text|truncatewords:20 }}</p>
   <a href="{% url 'blog:post_info' post.id %}" class="link-dark">Читать подробнее</a>
