@@ -24,8 +24,21 @@ def post_info(request, pk):
     return render(request, template, context)
 
 
-def category_info():
-    pass
+def category_info(request, slug):
+    """
+    Функция отображения страницы с постами в определенной категории
+    :param request: запрос)))
+    :param slug: уникальное имя категории
+    :return: HttpResponse
+    """
+    category = get_object_or_404(Category, slug=slug)
+    posts = Post.objects.filter(category=category)
+    context = {
+        'category': category,
+        'posts': posts
+    }
+    template = 'blog/category_info.html'
+    return render(request, template, context)
 
 
 def all_category(request):

@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
+from .core import kirillic_slugify
+
 User = get_user_model()
 
 
@@ -27,6 +29,10 @@ class Category(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        self.slug = kirillic_slugify(self.title)
+        super().save(*args, **kwargs)
 
 
 class Post(models.Model):

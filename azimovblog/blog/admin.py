@@ -26,6 +26,7 @@ class CategoryAdmin(admin.ModelAdmin):
         'post_count',
     )
     list_filter = ('age_limit',)
+    prepopulated_fields = {'slug': ('title',)}
 
     def post_count(self, obj):
         return obj.posts.count()

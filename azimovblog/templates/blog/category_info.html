@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
-{% block title %} AzimovBlog {% endblock %}
+{% load thumbnail %}
+{% block title %} {{ category.title }}{% endblock %}
 {% block content %}
-<h1 class="h1">Свежие записи</h1>
+<h1 class="h1">Записи в категории  {{ category.title }}</h1>
+<p> {{ category.description }}</p>
 {% for post in posts %}
 <article>
   <h3 class="h3">{{ post.title }}</h3>

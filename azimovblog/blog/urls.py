@@ -10,7 +10,7 @@ urlpatterns = [
     path('', index, name='index'),
     path('blog/<int:pk>/', post_info, name='post_info'),
     path('category/', all_category, name='all_category'),
-    path('category/<slug>/', category_info, name='category_info')
+    path('category/<slug>/', category_info, name='category_info'),
 
 ]
 
