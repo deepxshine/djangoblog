@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %} Регистрация {% endblock %}
+{% block content %}
+<div class="container">
+  <h1>Зарегистрироваться</h1>
+  <div class="container" style="border: solid black 1px; border-radius:15px; margin:20px; padding: 25px">
+    {% if form.errors %}
+    {% for field in form %}
+    {% for error in field.errors %}
+    <div class="alert alert-danger">
+      {{ error|escape }}
+    </div>
+    {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+    <div class="alert alert-danger">
+      {{ error|escape }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <form method="post" action="{% url 'user:signup' %} ">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-grop row my-3 p3">
+          <label for="{{ form.id_for_label }}">
+            {{ field.label }}
+            {% if field.field.required %}
+            <small class="required text-danger">*</small>
+            {% endif %}
+          </label>
+          {{ field }}
+          {% if field.help_text %}
+          <small id="{{ field.id_for_label }}--help" class="form-text text muted">
+            {{ field.help_text|safe }}
+          </small>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <div>
+        <button type="submit" class="btn" style="background-color:#fcebc7">Зарегистрироваться</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

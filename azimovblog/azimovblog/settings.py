@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blog',
     'about',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -113,6 +114,11 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+LOGIN_URL = 'user:login'
+LOGIN_REDIRECT_URL = 'blog:index'
+
+# LOGOUT_REDIRECT_URL = 'blog:index'
 
 
 # Static files (CSS, JavaScript, Images)
