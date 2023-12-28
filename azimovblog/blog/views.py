@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 
-from .models import Post, Category
+from .models import Post, Category, User, Profile, Comment, Like, Follow
 
 
 # Create your views here.
@@ -47,4 +47,18 @@ def all_category(request):
         'categories': categories
     }
     template = 'blog/all_categories.html'
+    return render(request, template, context)
+
+
+def profile(request, username):
+    user = get_object_or_404(User, username=username)
+    prof = user.profile
+    posts = user.post.all()
+    context = {
+        'user': user,
+        'profile': prof,
+        'posts': posts,
+
+    }
+    template = 'blog/profile.html'
     return render(request, template, context)
