@@ -4,6 +4,12 @@
       <a class="brand_r navbar-brand" href="{% url 'blog:index' %}">
         <span class="brand_r" style="color:#ff8800">Azimov</span>Blog
       </a>
+
+      <form class="d-flex" method="get" action="{% url 'blog:search' %}">
+        <input class="form-control" type="search" placeholder="Поиск" aria-label="Поиск" name="text">
+        <button class="btn" type="submit" style="background-color:#0a7dcf; color: #fff">Поиск</button>
+      </form>
+
       <ul class="nav">
         <li class="nav-item">
           <a class="nav-link" href="{% url 'blog:all_category' %}">Категории</a>
@@ -12,8 +18,27 @@
           <a class="nav-link" href="#">Избранное </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Профиль</a>
+          <a class="nav-link" href="#">Отслеживаемое</a>
         </li>
+
+        {% if user.is_authenticated %}
+
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'blog:profile' user.username %}">Профиль</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'user:logout' %}">Выйти</a>
+        </li>
+
+        {% else %}
+
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'user:login' %}">Вход </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'user:signup' %}">Регистрация</a>
+        </li>
+        {% endif %}
       </ul>
     </div>
   </nav>

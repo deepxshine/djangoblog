@@ -1,8 +1,55 @@
-{{ user }}
-{{ user.first_name }}
-{{ user.get_full_name }}
-{{ user.email }}
-{{ profile.birthday }}
-{% for post in posts %}
-{{post}}
-{% endfor %}
+{% extends 'base.html' %}
+{% load thumbnail %}
+{% load static %}
+{% block title %}
+{% if user.get_full_name %} {{ user.get_full_name }}
+{% else %} {{user.username}} {% endif %}
+{% endblock %}
+{% block content %}
+
+<div class="container py-5">
+  <div class="row">
+    <div class="col">
+
+      {% if profile.image %}
+      {% thumbnail profile.image "500x500" as im %}
+      <img src="{{ im.url }}">
+      {% endthumbnail %}
+      {% else %}
+      <div>
+        <img src="{% static 'img/blank_avatar.png' %}" width="500">
+      </div>
+      {% endif %}
+    </div>
+
+  <div class="col">
+    <div>
+      <h5>{% if user.get_full_name %} {{ user.get_full_name }}
+        {% else %} {{user.username}} {% endif %}</h5>
+      <ul>
+        {% if user.email %}
+        <li>
+          email: {{user.email}}
+        </li>
+        {% endif %}
+        <li>
+          Дата рождения:
+          {% if profile.birthday %} {{profile.birthday }}
+          {% else %} не указан {% endif %}
+        </li>
+        <li>
+          Количесвто постов: {{ count }}
+        </li>
+
+      </ul>
+    </div>
+    <a href="" role="button" class="btn" style="background-color:#fcebc7; ">Подписаться</a>
+    <a href="" role="button" class="btn" style="background-color:#fcebc7; ">Редактировать профиль</a>
+  </div>
+</div>
+{% include 'includes/posts.html' %}
+
+
+</div>
+
+{% endblock %}

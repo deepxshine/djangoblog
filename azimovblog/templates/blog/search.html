@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load thumbnail %}
+{% load static %}
+{% block title %} AzimovBlog {% endblock %}
+{% block content %}
+<div class="container py-5">
+  <h2>Поиск по авторам</h2>
+  <div class="row">
+
+    {% for profile in profiles %}
+    {% if profile %}
+    <div class="col" style="border: solid black 1px; border-radius: 10px; padding:10px">
+      <div class="row">
+        <div class="col">
+          {% if profile.image %}
+          {% thumbnail profile.image "300x300" as im %}
+          <img src="{{ im.url }}">
+          {% endthumbnail %}
+          {% else %}
+          <div>
+            <img src="{% static 'img/blank_avatar.png' %}" width="500">
+          </div>
+          {% endif %}
+        </div>
+        <div class="col">
+          <a href="#" style="color:black">
+            {% if profile.user.get_full_name %}
+            {{ profile.user.get_full_name }}
+            {% else %}
+            {{ profile.user }} {% endif %}
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+
+  </div>
+  <h2>Поиск по постам</h2>
+  <div>
+    {% include 'includes/posts.html' %}
+  </div>
+  <h2>Поиск по категориям</h2>
+  <div>
+    <div class="container">
+      <div class="row">
+        {% for category in categories %}
+        <div class="col">
+          <a href="{% url 'blog:category_info' category.slug %}" style="color:black">
+            <h5 class="card-title">{{ category.title }}</h5>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
