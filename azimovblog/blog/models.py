@@ -7,7 +7,7 @@ User = get_user_model()
 
 
 class Profile(models.Model):
-    """аватар, описание, дата рождения"""
+    """Аватар, описание, дата рождения"""
     user = models.OneToOneField(User, on_delete=models.CASCADE,
                                 related_name='profile')
     image = models.ImageField(upload_to='avatars/', blank=True,
@@ -89,7 +89,7 @@ class Follow(models.Model):
     follower = models.ForeignKey(User, on_delete=models.CASCADE,
                                  related_name='flwr',
                                  db_comment='Тот на кого подписываются')
-    following = models.ForeignKey(User, on_delete=models.CASCADE,
+    author = models.ForeignKey(User, on_delete=models.CASCADE,
                                   related_name='flwg',
                                   db_comment='Тот кто подписывается')
 

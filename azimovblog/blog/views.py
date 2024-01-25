@@ -1,7 +1,8 @@
 from django.db.models import Q
-from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404, redirect
 
-from .models import Post, Category, User, Profile
+from .models import Post, Category, User, Profile, Like
 
 
 # Create your views here.
@@ -18,8 +19,15 @@ def index(request):
 
 def post_info(request, pk):
     post = get_object_or_404(Post, id=pk)
+    if request.user.is_authenticated:
+        is_liked = Like.objects.filter(post=post, user=request.user).exists()
+    else:
+        is_liked = False
+    likes = Like.objects.filter(post=post).count()
     context = {
-        'post': post
+        'post': post,
+        'is_liked': is_liked,
+        'likes': likes,
     }
     template = 'blog/post_info.html'
     return render(request, template, context)
@@ -84,3 +92,33 @@ def search(request):
     }
     template = 'blog/search.html'
     return render(request, template, context)
+
+
+@login_required()
+def add_like(request, pk):
+    post = get_object_or_404(Post, id=pk)
+    if not Like.objects.filter(post=post, user=request.user).exists():
+        Like.objects.create(post=post, user=request.user)
+    return redirect('blog:post_info', pk)
+
+
+@login_required()
+def del_like(request, pk):
+    post = get_object_or_404(Post, id=pk)
+    like = Like.objects.filter(post=post, user=request.user)
+    if Like.objects.filter(post=post, user=request.user).exists():
+        like.delete()
+    return redirect('blog:post_info', pk)
+
+
+def add_sub(): pass
+def del_sub(): pass
+
+
+"""
+CRUD
+C -  CREATE - создание
+R - READ - чтение
+U -  UPDATE - обновление/изменение
+D - DELETE - удаление
+"""

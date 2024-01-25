@@ -20,15 +20,18 @@
           В категории <a href="{% url 'blog:category_info' post.category.slug %}">{{post.category }}</a>
         </li>
         <li>
-          Автор поста <a href="#">{% if post.author.get_full_name %}{{post.author.get_full_name }}{% else %}{{ post.author }} {% endif %}</a>
+          Автор поста <a href="#">{% if post.author.get_full_name %}{{post.author.get_full_name }}{% else %}{{
+          post.author }} {% endif %}</a>
         </li>
       </ul>
       <button type="button" class="btn btn-primary btl-lg"
               style="background-color:#ff8800; border-color:#ffffff;  border-radius:5px;">Подписаться на автора
       </button>
-      <button type="button" class="btn btn-primary btl-lg"
-              style="background-color:#ff8800; border-color:#ffffff;  border-radius:5px">Добавить в избранное
-      </button>
+
+      <a href="{% if is_liked %}{% url 'blog:del_like' post.id %}{% else %}{% url 'blog:add_like' post.id %} {% endif %}"
+      style="text-decoration: none;" type="button">
+        {% include 'includes/heart.html' %}
+      </a>{{ likes }}
     </div>
   </div>
   <article>
