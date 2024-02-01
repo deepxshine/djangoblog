@@ -61,7 +61,6 @@ def all_category(request):
 
 def profile(request, username):
     user = get_object_or_404(User, username=username)
-
     posts = user.post.all()
     count = user.post.count()
     if request.user.is_authenticated:
@@ -142,7 +141,13 @@ def del_sub(request, username):
 def likes_index(request):
     """В шаблон likes_index вывести посты,
     которые оценил пользователь, сделавший запрос"""
-    pass
+    likes = Like.objects.filter(user=request.user)
+    # коннект между постом и лайком
+    # как из лайков получить список постов
+    context = {'likes': likes }
+    template = 'blog/likes_index.html'
+    return render(request, template, context)
+
 
 def follow_index():
     """В шаблон follow_index посты авторов, на которых
