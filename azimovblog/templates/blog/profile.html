@@ -2,8 +2,8 @@
 {% load thumbnail %}
 {% load static %}
 {% block title %}
-{% if user.get_full_name %} {{ user.get_full_name }}
-{% else %} {{user.username}} {% endif %}
+{% if author.get_full_name %} {{ author.get_full_name }}
+{% else %} {{author.username}} {% endif %}
 {% endblock %}
 {% block content %}
 
@@ -11,8 +11,8 @@
   <div class="row">
     <div class="col">
 
-      {% if profile.image %}
-      {% thumbnail profile.image "500x500" as im %}
+      {% if author.profile.image %}
+      {% thumbnail author.profile.image "500x500" as im %}
       <img src="{{ im.url }}">
       {% endthumbnail %}
       {% else %}
@@ -24,27 +24,41 @@
 
   <div class="col">
     <div>
-      <h5>{% if user.get_full_name %} {{ user.get_full_name }}
-        {% else %} {{user.username}} {% endif %}</h5>
+      <h5>{% if author.get_full_name %} {{ author.get_full_name }}
+        {% else %} {{author.username}} {% endif %}</h5>
       <ul>
-        {% if user.email %}
+        {% if author.email %}
         <li>
-          email: {{user.email}}
+          email: {{author.email}}
         </li>
         {% endif %}
         <li>
           Дата рождения:
-          {% if profile.birthday %} {{profile.birthday }}
+          {% if author.profile.birthday %} {{author.profile.birthday }}
           {% else %} не указан {% endif %}
         </li>
         <li>
           Количесвто постов: {{ count }}
         </li>
+        <li>
+          Количесвто подписчиков: {{ author.follows_count  }}
+        </li>
+        <li>
+          Количесвто лайков: {{ author.likes_count }}
+        </li>
 
       </ul>
     </div>
-    <a href="" role="button" class="btn" style="background-color:#fcebc7; ">Подписаться</a>
+    {% if user != author %}
+    {% if is_follow %}
+    <a href="{% url 'blog:unfollow' author.username %}" role="button" class="btn" style="background-color:#fcebc7; ">Отписаться</a>
+    {% else %}
+    <a href="{% url 'blog:follow' author.username %}" role="button" class="btn" style="background-color:#fcebc7; ">Подписаться</a>
+    {% endif %}
+    {% endif %}
+    {% if user == author %}
     <a href="" role="button" class="btn" style="background-color:#fcebc7; ">Редактировать профиль</a>
+    {% endif %}
   </div>
 </div>
 {% include 'includes/posts.html' %}

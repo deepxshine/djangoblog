@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import (index, post_info, category_info, all_category, profile,
-                    search, add_like, del_like)
+                    search, add_like, del_like, add_sub, del_sub)
 
 
 app_name = 'blog'
@@ -16,4 +16,8 @@ urlpatterns = [
     path('search/', search, name='search'),
     path('blog/<int:pk>/add_like/', add_like, name='add_like'),
     path('blog/<int:pk>/del_like/', del_like, name='del_like'),
+
+    path('profile/<str:username>/follow/', add_sub, name='follow'),
+    path('profile/<str:username>/unfollow/', del_sub, name='unfollow'),
+
 ]

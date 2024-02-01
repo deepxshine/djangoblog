@@ -2,7 +2,7 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 
-from .models import Post, Category, User, Profile, Like
+from .models import Post, Category, User, Profile, Like, Follow
 
 
 # Create your views here.
@@ -61,14 +61,21 @@ def all_category(request):
 
 def profile(request, username):
     user = get_object_or_404(User, username=username)
-    prof = user.profile
+
     posts = user.post.all()
     count = user.post.count()
+    if request.user.is_authenticated:
+        is_follow = Follow.objects.filter(author=user,
+                                        follower=request.user).exists()
+    else:
+        is_follow = False
+    user.follows_count = Follow.objects.filter(author=user).count()
+    user.likes_count = Like.objects.filter(post__author=user).count()
     context = {
-        'user': user,
-        'profile': prof,
+        'author': user,
         'posts': posts,
         'count': count,
+        'is_follow': is_follow,
 
     }
     template = 'blog/profile.html'
@@ -106,19 +113,42 @@ def add_like(request, pk):
 def del_like(request, pk):
     post = get_object_or_404(Post, id=pk)
     like = Like.objects.filter(post=post, user=request.user)
-    if Like.objects.filter(post=post, user=request.user).exists():
+    if like.exists():
         like.delete()
     return redirect('blog:post_info', pk)
 
 
-def add_sub(): pass
-def del_sub(): pass
+@login_required
+def add_sub(request, username):
+    follower = request.user # тот кто подписывается
+    author = get_object_or_404(User, username=username) # на кого
+    if follower != author:
+        if not Follow.objects.filter(follower=follower, author=author).exists():
+            Follow.objects.create(follower=follower, author=author)
+    return redirect('blog:profile', username)
 
 
-"""
-CRUD
-C -  CREATE - создание
-R - READ - чтение
-U -  UPDATE - обновление/изменение
-D - DELETE - удаление
-"""
+@login_required
+def del_sub(request, username):
+    follower = request.user
+    author = get_object_or_404(User, username=username)
+    follow = Follow.objects.filter(follower=follower, author=author)
+    if follow.exists():
+        follow.delete()
+    return redirect('blog:profile', username)
+
+
+
+def likes_index(request):
+    """В шаблон likes_index вывести посты,
+    которые оценил пользователь, сделавший запрос"""
+    pass
+
+def follow_index():
+    """В шаблон follow_index посты авторов, на которых
+    подписан текущий пользователь"""
+    pass
+
+def follow_list():
+    """В шаблон follow_list авторов, на которых
+        подписан текущий пользователь"""
