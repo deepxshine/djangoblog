@@ -1,8 +1,9 @@
 from django.urls import path
 
 from .views import (index, post_info, category_info, all_category, profile,
-                    search, add_like, del_like, add_sub, del_sub)
+                    search, add_like, del_like, add_sub, del_sub, PostCreate)
 
+from django.contrib.auth.decorators import login_required
 
 app_name = 'blog'
 
@@ -19,5 +20,7 @@ urlpatterns = [
 
     path('profile/<str:username>/follow/', add_sub, name='follow'),
     path('profile/<str:username>/unfollow/', del_sub, name='unfollow'),
+
+    path('create_post/', login_required(PostCreate.as_view()), name='create'),
 
 ]

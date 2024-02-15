@@ -88,10 +88,10 @@ class Like(models.Model):
 class Follow(models.Model):
     follower = models.ForeignKey(User, on_delete=models.CASCADE,
                                  related_name='flwr',
-                                 db_comment='Тот на кого подписываются')
+                                 db_comment='Тот кто подписывается')
     author = models.ForeignKey(User, on_delete=models.CASCADE,
                                   related_name='flwg',
-                                  db_comment='Тот кто подписывается')
+                                  db_comment='Тот на кого подписываются')
 
     class Meta:
         verbose_name = 'Подписка'

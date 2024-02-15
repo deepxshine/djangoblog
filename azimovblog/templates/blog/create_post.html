@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Создание поста{% endblock %}
+{% block content %}
+<h1>Создание поста</h1>
+{% include 'includes/form_errors.html' %}
+<form action="" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {% include 'includes/form.html' %}
+  <button class="btn" type="submit" style="background-color: #fcebc7">Создать пост</button>
+</form>
+{% endblock %}

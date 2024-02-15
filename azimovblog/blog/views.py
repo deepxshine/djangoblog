@@ -1,7 +1,10 @@
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views.generic import FormView
+from django.urls import reverse_lazy
 
+from .forms import PostCreateForm
 from .models import Post, Category, User, Profile, Like, Follow
 
 
@@ -21,13 +24,18 @@ def post_info(request, pk):
     post = get_object_or_404(Post, id=pk)
     if request.user.is_authenticated:
         is_liked = Like.objects.filter(post=post, user=request.user).exists()
+        is_follow = Follow.objects.filter(follower=request.user ,
+                                          author=post.author)
     else:
         is_liked = False
+        is_follow = False
+
     likes = Like.objects.filter(post=post).count()
     context = {
         'post': post,
         'is_liked': is_liked,
         'likes': likes,
+        'is_follow': is_follow,
     }
     template = 'blog/post_info.html'
     return render(request, template, context)
@@ -36,7 +44,7 @@ def post_info(request, pk):
 def category_info(request, slug):
     """
     Функция отображения страницы с постами в определенной категории
-    :param request: запрос)))
+    :param request: запрос
     :param slug: уникальное имя категории
     :return: HttpResponse
     """
@@ -119,12 +127,12 @@ def del_like(request, pk):
 
 @login_required
 def add_sub(request, username):
-    follower = request.user # тот кто подписывается
+    follower = request.user  # тот кто подписывается
     author = get_object_or_404(User, username=username) # на кого
     if follower != author:
         if not Follow.objects.filter(follower=follower, author=author).exists():
             Follow.objects.create(follower=follower, author=author)
-    return redirect('blog:profile', username)
+    return redirect(request.META.get('HTTP_REFERER'))
 
 
 @login_required
@@ -134,8 +142,7 @@ def del_sub(request, username):
     follow = Follow.objects.filter(follower=follower, author=author)
     if follow.exists():
         follow.delete()
-    return redirect('blog:profile', username)
-
+    return redirect(request.META.get('HTTP_REFERER')) # фишка
 
 
 def likes_index(request):
@@ -157,3 +164,17 @@ def follow_index():
 def follow_list():
     """В шаблон follow_list авторов, на которых
         подписан текущий пользователь"""
+    pass
+
+
+class PostCreate(FormView):
+    template_name = 'blog/create_post.html' # шаблон
+    form_class = PostCreateForm # форма, которая должна выводится
+    success_url = reverse_lazy('blog:index') # ссылка, на которую
+    # мы переходим в случае успеха
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        Post.objects.create(author=self.request.user, **form.cleaned_data)
+        return redirect(self.success_url)
+
