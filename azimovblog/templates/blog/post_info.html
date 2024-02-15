@@ -26,10 +26,15 @@
       </ul>
       {% if user != post.author %}
       {% if is_follow %}
-      <a href="{% url 'blog:unfollow' post.author.username %}" role="button" class="btn" style="background-color:#fcebc7; ">Отписаться</a>
+      <a href="{% url 'blog:unfollow' post.author.username %}" role="button" class="btn"
+         style="background-color:#fcebc7; ">Отписаться</a>
       {% else %}
-      <a href="{% url 'blog:follow' post.author.username %}" role="button" class="btn" style="background-color:#fcebc7; ">Подписаться</a>
+      <a href="{% url 'blog:follow' post.author.username %}" role="button" class="btn"
+         style="background-color:#fcebc7; ">Подписаться</a>
       {% endif %}
+      {% else %}
+      <a href="#" role="button" class="btn"
+         style="background-color:#fcebc7; ">Редактировать пост</a>
       {% endif %}
 
       <a href="{% if is_liked %}{% url 'blog:del_like' post.id %}{% else %}{% url 'blog:add_like' post.id %} {% endif %}"
@@ -41,5 +46,29 @@
   <article>
     <p>{{ post.text }}</p>
   </article>
+  <div class="py-2" style="border: 1px solid black; border-radius: 10px; padding:10px">
+    {% include 'includes/form_errors.html' %}
+    <form action="{% url 'blog:add_comment' post.id %}" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {% include "includes/form.html" %}
+      <button class="btn" type="submit" style="background-color: #fcebc7">Опубликовать</button>
+    </form>
+  </div>
+  {% for comment in comments %}
+  <div class="py-2" style="border: 1px solid black; border-radius: 10px; padding:10px">
+    <h5>{% if comment.comment_author.get_full_name %} {{comment.comment_author.get_full_name}}
+      {% else %} {{ comment.comment_author }} {% endif %}
+    </h5>
+    <span class="text-muted">{{ comment.created_date }}</span>
+    <article>{{ comment.text}}</article>
+    {% if comment.image %}
+    {% thumbnail comment.image "700x600" as im %}
+
+    <img src="{{ im.url }}">
+
+    {% endthumbnail %}
+    {% endif %}
+  </div>
+  {% endfor %}
 </div>
 {% endblock %}

@@ -1,11 +1,11 @@
-from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import FormView
 from django.urls import reverse_lazy
+from django.views.generic import FormView, UpdateView
 
-from .forms import PostCreateForm
-from .models import Post, Category, User, Profile, Like, Follow
+from .forms import PostCreateForm, CommentCreateForm
+from .models import Post, Category, User, Profile, Like, Follow, Comment
 
 
 # Create your views here.
@@ -24,18 +24,22 @@ def post_info(request, pk):
     post = get_object_or_404(Post, id=pk)
     if request.user.is_authenticated:
         is_liked = Like.objects.filter(post=post, user=request.user).exists()
-        is_follow = Follow.objects.filter(follower=request.user ,
+        is_follow = Follow.objects.filter(follower=request.user,
                                           author=post.author)
     else:
         is_liked = False
         is_follow = False
 
     likes = Like.objects.filter(post=post).count()
+    form = CommentCreateForm(request.POST or None)
+    comments = Comment.objects.filter(post=post)
     context = {
         'post': post,
         'is_liked': is_liked,
         'likes': likes,
         'is_follow': is_follow,
+        'form': form,
+        'comments': comments,
     }
     template = 'blog/post_info.html'
     return render(request, template, context)
@@ -73,7 +77,7 @@ def profile(request, username):
     count = user.post.count()
     if request.user.is_authenticated:
         is_follow = Follow.objects.filter(author=user,
-                                        follower=request.user).exists()
+                                          follower=request.user).exists()
     else:
         is_follow = False
     user.follows_count = Follow.objects.filter(author=user).count()
@@ -128,9 +132,10 @@ def del_like(request, pk):
 @login_required
 def add_sub(request, username):
     follower = request.user  # тот кто подписывается
-    author = get_object_or_404(User, username=username) # на кого
+    author = get_object_or_404(User, username=username)  # на кого
     if follower != author:
-        if not Follow.objects.filter(follower=follower, author=author).exists():
+        if not Follow.objects.filter(follower=follower,
+                                     author=author).exists():
             Follow.objects.create(follower=follower, author=author)
     return redirect(request.META.get('HTTP_REFERER'))
 
@@ -142,7 +147,7 @@ def del_sub(request, username):
     follow = Follow.objects.filter(follower=follower, author=author)
     if follow.exists():
         follow.delete()
-    return redirect(request.META.get('HTTP_REFERER')) # фишка
+    return redirect(request.META.get('HTTP_REFERER'))  # фишка
 
 
 def likes_index(request):
@@ -151,7 +156,7 @@ def likes_index(request):
     likes = Like.objects.filter(user=request.user)
     # коннект между постом и лайком
     # как из лайков получить список постов
-    context = {'likes': likes }
+    context = {'likes': likes}
     template = 'blog/likes_index.html'
     return render(request, template, context)
 
@@ -161,6 +166,7 @@ def follow_index():
     подписан текущий пользователь"""
     pass
 
+
 def follow_list():
     """В шаблон follow_list авторов, на которых
         подписан текущий пользователь"""
@@ -168,9 +174,10 @@ def follow_list():
 
 
 class PostCreate(FormView):
-    template_name = 'blog/create_post.html' # шаблон
-    form_class = PostCreateForm # форма, которая должна выводится
-    success_url = reverse_lazy('blog:index') # ссылка, на которую
+    template_name = 'blog/create_post.html'  # шаблон
+    form_class = PostCreateForm  # форма, которая должна выводится
+    success_url = reverse_lazy('blog:index')  # ссылка, на которую
+
     # мы переходим в случае успеха
 
     def form_valid(self, form):
@@ -178,3 +185,29 @@ class PostCreate(FormView):
         Post.objects.create(author=self.request.user, **form.cleaned_data)
         return redirect(self.success_url)
 
+
+@login_required()
+def create_comment(request, pk):
+    post = get_object_or_404(Post, id=pk)
+    form = CommentCreateForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        Comment.objects.create(comment_author=request.user,
+                               post=post,
+                               **form.cleaned_data)
+    return redirect('blog:post_info', pk)
+
+
+class PostEdit(UpdateView):
+    model = Post
+    form_class = PostCreateForm
+    template_name = 'blog/create_post.html'
+    success_url = reverse_lazy('blog:index')
+
+    def form_valid(self, form):
+        form.save()
+        return redirect(self.success_url)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["name"] = 'value'
+        return context
