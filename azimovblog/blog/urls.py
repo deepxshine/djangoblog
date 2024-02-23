@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import (index, post_info, category_info, all_category, profile,
                     search, add_like, del_like, add_sub, del_sub, PostCreate,
-                    create_comment, PostEdit)
+                    create_comment, PostEdit, likes_index, follow_index, follow_list)
 
 from django.contrib.auth.decorators import login_required
 
@@ -23,6 +23,8 @@ urlpatterns = [
     path('create_post/', login_required(PostCreate.as_view()), name='create'),
     path('blog/<int:pk>/comment/', create_comment, name='add_comment'),
     path('blog/<int:pk>/post_edit', login_required(PostEdit.as_view()),
-         name='post_edit')
-
+         name='post_edit'),
+    path('favorite/', likes_index, name='likes'),
+    path('followings/', follow_list, name='followings'),
+    path('news/', follow_index, name='news'),
 ]

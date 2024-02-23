@@ -90,8 +90,8 @@ class Follow(models.Model):
                                  related_name='flwr',
                                  db_comment='Тот кто подписывается')
     author = models.ForeignKey(User, on_delete=models.CASCADE,
-                                  related_name='flwg',
-                                  db_comment='Тот на кого подписываются')
+                               related_name='flwg',
+                               db_comment='Тот на кого подписываются')
 
     class Meta:
         verbose_name = 'Подписка'

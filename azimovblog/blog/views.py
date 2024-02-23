@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -10,11 +11,17 @@ from .models import Post, Category, User, Profile, Like, Follow, Comment
 
 # Create your views here.
 
+def pagination(req, post):
+    paginator = Paginator(post, 5)  # что делим, сколько на 1 станице
+    page_number = req.GET.get('page')
+    return paginator.get_page(page_number)
+
 
 def index(request):
     posts = Post.objects.all()
+    page_obj = pagination(request, posts)
     context = {
-        'posts': posts
+        'page_obj': page_obj
     }
     template = 'blog/index.html'
     return render(request, template, context)
@@ -153,24 +160,42 @@ def del_sub(request, username):
 def likes_index(request):
     """В шаблон likes_index вывести посты,
     которые оценил пользователь, сделавший запрос"""
-    likes = Like.objects.filter(user=request.user)
-    # коннект между постом и лайком
-    # как из лайков получить список постов
-    context = {'likes': likes}
-    template = 'blog/likes_index.html'
+    # likes = Like.objects.filter(user=request.user)
+    # # коннект между постом и лайком
+    # # как из лайков получить список постов
+    # posts = [like.post for like in likes]
+    posts = Post.objects.filter(liked_post__user=request.user)
+    page_obj = pagination(request, posts)
+    context = {
+        'page_obj': page_obj,
+        'header': 'like',
+    }
+    template = 'blog/index.html'
     return render(request, template, context)
 
 
-def follow_index():
+def follow_index(request):
     """В шаблон follow_index посты авторов, на которых
     подписан текущий пользователь"""
-    pass
+    posts = Post.objects.filter(author__flwg__follower=request.user)
+    page_obj = pagination(request, posts)
+    context = {
+        'page_obj': page_obj,
+        'header': 'news',
+    }
+    template = 'blog/index.html'
+    return render(request, template, context)
 
 
-def follow_list():
+def follow_list(request):
     """В шаблон follow_list авторов, на которых
         подписан текущий пользователь"""
-    pass
+    profiles = Profile.objects.filter(user__flwg__follower=request.user)
+    context = {
+        'profiles': profiles
+    }
+    template = 'blog/authors.html'
+    return render(request, template, context)
 
 
 class PostCreate(FormView):

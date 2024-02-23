@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load thumbnail %}
+{% load static %}
+{% block title %} AzimovBlog {% endblock %}
+{% block content %}
+<div class="container py-5">
+  <h2>Авторы, на которых вы подписаны</h2>
+  <div class="row">
+
+    {% for profile in profiles %}
+    {% if profile %}
+    <div class="col" style="border: solid black 1px; border-radius: 10px; padding:10px">
+      <div class="row">
+        <div class="col">
+          {% if profile.image %}
+          {% thumbnail profile.image "300x300" as im %}
+          <img src="{{ im.url }}">
+          {% endthumbnail %}
+          {% else %}
+          <div>
+            <img src="{% static 'img/blank_avatar.png' %}" width="500">
+          </div>
+          {% endif %}
+        </div>
+        <div class="col">
+          <a href="#" style="color:black">
+            {% if profile.user.get_full_name %}
+            {{ profile.user.get_full_name }}
+            {% else %}
+            {{ profile.user }} {% endif %}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endfor %}
+{% endblock %}

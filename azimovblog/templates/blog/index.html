@@ -2,6 +2,15 @@
 {% extends 'base.html' %}
 {% block title %} AzimovBlog {% endblock %}
 {% block content %}
-<h1 class="h1">Свежие записи</h1>
+<h1 class="h1">
+  {% if header == 'like' %}
+  Избранные записи
+  {% elif header == 'news' %}
+  Лента
+  {% else %}
+  Новые записи на сайте
+  {% endif %}
+</h1>
 {% include 'includes/posts.html' %}
+{% include 'includes/paginator.html' %}
 {% endblock %}
