@@ -1,9 +1,10 @@
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import FormView, UpdateView
+from django.views.generic import FormView, UpdateView, DeleteView
 
 from .forms import PostCreateForm, CommentCreateForm
 from .models import Post, Category, User, Profile, Like, Follow, Comment
@@ -198,6 +199,17 @@ def follow_list(request):
     return render(request, template, context)
 
 
+@login_required()
+def create_comment(request, pk):
+    post = get_object_or_404(Post, id=pk)
+    form = CommentCreateForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        Comment.objects.create(comment_author=request.user,
+                               post=post,
+                               **form.cleaned_data)
+    return redirect('blog:post_info', pk)
+
+
 class PostCreate(FormView):
     template_name = 'blog/create_post.html'  # шаблон
     form_class = PostCreateForm  # форма, которая должна выводится
@@ -210,16 +222,10 @@ class PostCreate(FormView):
         Post.objects.create(author=self.request.user, **form.cleaned_data)
         return redirect(self.success_url)
 
-
-@login_required()
-def create_comment(request, pk):
-    post = get_object_or_404(Post, id=pk)
-    form = CommentCreateForm(request.POST or None, request.FILES or None)
-    if form.is_valid():
-        Comment.objects.create(comment_author=request.user,
-                               post=post,
-                               **form.cleaned_data)
-    return redirect('blog:post_info', pk)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['action'] = 'create'
+        return context
 
 
 class PostEdit(UpdateView):
@@ -234,7 +240,23 @@ class PostEdit(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["name"] = 'value'
+        context["action"] = 'update'
+        return context
+
+
+class DeletePost(DeleteView):
+    model = Post
+    template_name = 'blog/create_post.html'
+
+    def form_valid(self, form):
+        if self.object.author == self.request.user:
+            self.object.delete()
+            return redirect('blog:index')
+        raise PermissionDenied('У вас нет прав!')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['action'] = 'delete'
         return context
 
 

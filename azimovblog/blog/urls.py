@@ -2,7 +2,8 @@ from django.urls import path
 
 from .views import (index, post_info, category_info, all_category, profile,
                     search, add_like, del_like, add_sub, del_sub, PostCreate,
-                    create_comment, PostEdit, likes_index, follow_index, follow_list)
+                    create_comment, PostEdit, likes_index, follow_index,
+                    follow_list, DeletePost)
 
 from django.contrib.auth.decorators import login_required
 
@@ -27,4 +28,6 @@ urlpatterns = [
     path('favorite/', likes_index, name='likes'),
     path('followings/', follow_list, name='followings'),
     path('news/', follow_index, name='news'),
+    path('blog/<int:pk>/delete/', login_required(DeletePost.as_view()),
+         name='delete'),
 ]
