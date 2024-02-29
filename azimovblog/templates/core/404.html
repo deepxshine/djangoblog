@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Создание поста{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row">
+    <h1>Страница не найдена</h1>
+    <span>Страница устарела, удалена или не найдена</span>
+    <a href="{% url 'blog:index' %}"
+       class="btn"
+       style="background-color:#fcebc7; color: black">
+      Вернуться на главную
+    </a>
+  </div>
+</div>
+{% endblock %}

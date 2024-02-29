@@ -5,6 +5,8 @@ from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView, UpdateView, DeleteView
+from django.views.decorators.cache import cache_page
+
 
 from .forms import PostCreateForm, CommentCreateForm
 from .models import Post, Category, User, Profile, Like, Follow, Comment
@@ -18,6 +20,7 @@ def pagination(req, post):
     return paginator.get_page(page_number)
 
 
+@cache_page(30, key_prefix='index_page')
 def index(request):
     posts = Post.objects.all()
     page_obj = pagination(request, posts)

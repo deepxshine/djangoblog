@@ -1,7 +1,9 @@
 {# index #}
 {% extends 'base.html' %}
+{% load cache %}
 {% block title %} AzimovBlog {% endblock %}
 {% block content %}
+{% cache 30 index_page page_obj %}
 <h1 class="h1">
   {% if header == 'like' %}
   Избранные записи
@@ -12,5 +14,6 @@
   {% endif %}
 </h1>
 {% include 'includes/posts.html' %}
+{% endcache %}
 {% include 'includes/paginator.html' %}
 {% endblock %}
